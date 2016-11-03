@@ -27,7 +27,9 @@ var globalMocks = {
 	setup: function () {
 		global.protractor = {};
 		global.browser = {
-			addMockModule: function () {}
+			addMockModule: function () {},
+			executeScript: function () {},
+			executeAsyncScript: function () {}
 		};
 	},
 	teardown: function () {
@@ -38,17 +40,36 @@ var globalMocks = {
 
 
 describe('init data', function(){
+	var initData;
 	beforeEach(function () {
-		this.initData = initDataModule.require();
+		initData = initDataModule.require();
 		globalMocks.setup();
 		defaultConfig.setup();
 	});
 	afterEach(function () {
+		initData = null;
 		initDataModule.teardown();
 		globalMocks.teardown();
 		defaultConfig.teardown();
 	});
+
 	it('will not error when not providing config', function () {
-		expect(this.initData).not.toThrow();
+		expect(initData).not.toThrow();
+	});
+
+	it('uses executeScript for all browser methods', function () {
+		var browserMethods = [
+			'requestsMade',
+			'clearRequests',
+			'add',
+			'remove'
+		];
+		spyOn(global.browser, 'executeScript');
+		spyOn(global.browser, 'executeAsyncScript');
+		browserMethods.forEach(function (method) {
+			initData[method]();
+			expect(global.browser.executeScript).toHaveBeenCalled();
+			expect(global.browser.executeAsyncScript).not.toHaveBeenCalled();
+		});
 	});
 });
