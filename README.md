@@ -30,6 +30,18 @@ We can also configure our root directory where the mocks and protractor configur
     	};
   	}
 
+Or the configuration can be set here:
+  	onPrepare: function(){
+    	require('protractor-http-mock').config = {
+			protractorConfig: {
+				mocks: {
+					dir: 'my-mocks',
+					default: ['defaults']
+				}
+			}
+    	};
+  	}
+
 ## Usage
 Mocks are defined as JSON objects describing the request and response for a particular HTTP call:
 
